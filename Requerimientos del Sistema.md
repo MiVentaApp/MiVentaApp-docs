@@ -21,12 +21,14 @@ Los vendedores independientes no cuentan con herramientas simples y accesibles p
 - Conflictos con clientes por falta de registros claros
 
 ### Solución
-Aplicación web que permita:
+Aplicación móvil nativa para Android que permita:
 - Registrar productos con costo de compra y precio de venta
 - Calcular automáticamente márgenes de ganancia
 - Gestionar clientes y su historial
 - Controlar ventas y estado de pagos
 - Visualizar reportes básicos de inversión y ganancias
+- Trabajar en modo offline con sincronización automática
+- Compartir información de ventas por WhatsApp y otras apps
 
 ## 3. ACTORES
 
@@ -82,14 +84,16 @@ Aplicación web que permita:
 
 ### EPIC 1: Gestión de Autenticación y Usuarios
 
-#### Feature 1.1: Registro de Usuarios
-- **Story 1.1.1:** Como vendedor independiente quiero crear una cuenta de usuario para acceder a la plataforma y empezar a gestionar mi negocio
-- **Story 1.1.2:** Como vendedor independiente quiero recibir confirmación de mi registro para saber que mi cuenta fue creada exitosamente
+#### Feature 1.1: Autenticación con Google Sign-In
+- **Story 1.1.1:** Como vendedor independiente quiero registrarme usando mi cuenta de Google para acceder rápidamente sin crear una contraseña
+- **Story 1.1.2:** Como vendedor independiente quiero iniciar sesión con mi cuenta de Google para acceder de manera segura con un solo clic
+- **Story 1.1.3:** Como vendedor independiente quiero que el sistema sincronice automáticamente mi nombre y email de Google para no tener que ingresarlos manualmente
+- **Story 1.1.4:** Como vendedor independiente quiero ver qué cuenta de Google estoy usando para identificar mi sesión actual
 
-#### Feature 1.2: Inicio de Sesión
-- **Story 1.2.1:** Como vendedor independiente quiero iniciar sesión con mi email y contraseña para acceder a mi información personal del negocio
+#### Feature 1.2: Gestión de Sesión
+- **Story 1.2.1:** Como vendedor independiente quiero mantener mi sesión activa mientras uso la app para no tener que autenticarme constantemente
 - **Story 1.2.2:** Como vendedor independiente quiero cerrar sesión para proteger mi información cuando no esté usando la aplicación
-- **Story 1.2.3:** Como vendedor independiente quiero recuperar mi contraseña para poder acceder nuevamente si la olvido
+- **Story 1.2.3:** Como vendedor independiente quiero que mi sesión sea segura y expire automáticamente después de un período de inactividad prolongado
 
 #### Feature 1.3: Perfil de Usuario
 - **Story 1.3.1:** Como vendedor independiente quiero ver mi información de perfil para verificar mis datos personales
@@ -210,3 +214,27 @@ Aplicación web que permita:
 #### Feature 7.2: Respaldo de Datos
 - **Story 7.2.1:** Como vendedor independiente quiero que mis datos se guarden automáticamente para no perder información
 - **Story 7.2.2:** Como vendedor independiente quiero exportar mis datos a Excel o CSV para tener un respaldo externo
+
+---
+
+### EPIC 8: Funcionalidades Específicas Android
+
+#### Feature 8.1: Integración con Aplicaciones
+- **Story 8.1.1:** Como vendedor independiente quiero compartir detalles de venta por WhatsApp para enviar resumen al cliente
+- **Story 8.1.2:** Como vendedor independiente quiero llamar a un cliente desde la app para contactarlo rápidamente
+- **Story 8.1.3:** Como vendedor independiente quiero compartir reportes por email o apps de mensajería para tener respaldo externo
+
+#### Feature 8.2: Modo Offline
+- **Story 8.2.1:** Como vendedor independiente quiero trabajar sin conexión a internet para no depender de la red
+- **Story 8.2.2:** Como vendedor independiente quiero que mis datos se sincronicen automáticamente cuando recupere conexión para mantener información actualizada
+- **Story 8.2.3:** Como vendedor independiente quiero ver el estado de sincronización para saber si mis datos están actualizados
+
+#### Feature 8.3: Notificaciones
+- **Story 8.3.1:** Como vendedor independiente quiero recibir notificaciones de pagos pendientes para recordar cobrar a mis clientes
+- **Story 8.3.2:** Como vendedor independiente quiero recibir alertas de productos con stock bajo para saber cuándo reabastecer
+- **Story 8.3.3:** Como vendedor independiente quiero configurar recordatorios personalizados para hacer seguimiento a clientes
+
+#### Feature 8.4: Funcionalidades del Dispositivo
+- **Story 8.4.1:** Como vendedor independiente quiero tomar fotos de productos desde la app para tener registro visual
+- **Story 8.4.2:** Como vendedor independiente quiero escanear códigos de barras para agregar productos rápidamente
+- **Story 8.4.3:** Como vendedor independiente quiero importar clientes desde mis contactos del teléfono para agilizar el registro

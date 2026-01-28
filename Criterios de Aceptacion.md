@@ -5,63 +5,92 @@
 
 ## EPIC 1: Gestión de Autenticación y Usuarios
 
-### Feature 1.1: Registro de Usuarios
+### Feature 1.1: Autenticación con Google Sign-In
 
-#### Story 1.1.1: Como vendedor independiente quiero crear una cuenta de usuario para acceder a la plataforma
-
-**Criterios de Aceptación:**
-- El formulario debe solicitar: nombre completo, email y contraseña
-- El email debe tener formato válido (contener @ y dominio)
-- La contraseña debe tener mínimo 8 caracteres
-- El email no puede estar registrado previamente
-- Todos los campos son obligatorios
-- Se debe mostrar mensaje de error si falta algún campo
-- Se debe mostrar mensaje de error si el email ya existe
-- Al registrarse exitosamente, se redirige al usuario a la pantalla de inicio de sesión o dashboard
-- La contraseña debe almacenarse encriptada en la base de datos
-
-#### Story 1.1.2: Como vendedor independiente quiero recibir confirmación de mi registro para saber que mi cuenta fue creada exitosamente
+#### Story 1.1.1: Como vendedor independiente quiero registrarme usando mi cuenta de Google para acceder rápidamente sin crear una contraseña
 
 **Criterios de Aceptación:**
-- Se muestra un mensaje de confirmación después del registro exitoso
-- El mensaje debe indicar claramente que la cuenta fue creada
-- Opcionalmente, se envía un email de bienvenida (futuro)
+- La pantalla de bienvenida muestra botón "Continuar con Google" con el logo oficial
+- Al presionar el botón, se muestra selector de cuentas de Google del dispositivo
+- El usuario puede seleccionar cualquier cuenta de Google vinculada al dispositivo
+- Si el email de Google no está registrado, se crea automáticamente una nueva cuenta en el sistema
+- Se solicita permiso para acceder a: email, nombre y foto de perfil
+- El registro es instantáneo sin formularios adicionales
+- Al registrarse exitosamente, se redirige al dashboard principal
+- No se almacena contraseña en la base de datos (autenticación delegada a Google)
+- Se almacena el Google ID único del usuario para futuras autenticaciones
+- Se muestra mensaje de bienvenida con el nombre obtenido de Google
+
+#### Story 1.1.2: Como vendedor independiente quiero iniciar sesión con mi cuenta de Google para acceder de manera segura con un solo clic
+
+**Criterios de Aceptación:**
+- La pantalla de login muestra botón "Continuar con Google"
+- Al presionar el botón, se muestra selector de cuentas de Google
+- Si el usuario ya seleccionó una cuenta previamente, el login es automático
+- El sistema verifica el ID Token con los servidores de Google
+- Si el Google ID existe en la base de datos, se inicia sesión exitosamente
+- Si el Google ID no existe, se ofrece crear cuenta automáticamente
+- Al iniciar sesión correctamente, se redirige al dashboard
+- Se genera un token JWT propio del sistema con el userId y email
+- El token JWT se almacena de forma segura en el dispositivo
+- La sesión persiste hasta que el usuario cierre sesión manualmente
+- No se requiere ingresar email ni contraseña en ningún momento
+
+#### Story 1.1.3: Como vendedor independiente quiero que el sistema sincronice automáticamente mi nombre y email de Google para no tener que ingresarlos manualmente
+
+**Criterios de Aceptación:**
+- Al autenticarse con Google, se obtiene automáticamente: nombre completo, email y foto de perfil
+- Estos datos se almacenan en el perfil del usuario en la base de datos
+- El nombre y email se muestran en la interfaz sin solicitar ingreso manual
+- La foto de perfil de Google se muestra en el menú de la app
+- Si Google no proporciona el nombre, se solicita al usuario la primera vez
+- Los datos se actualizan cada vez que el usuario inicia sesión (sincronización)
+- El usuario puede ver estos datos en su perfil
+
+#### Story 1.1.4: Como vendedor independiente quiero ver qué cuenta de Google estoy usando para identificar mi sesión actual
+
+**Criterios de Aceptación:**
+- En el menú de perfil se muestra el email de Google activo
+- Se muestra la foto de perfil de la cuenta de Google
+- Se indica claramente "Conectado con Google"
+- Se muestra la fecha del último acceso
+- El usuario puede ver esta información sin cerrar sesión
 
 ---
 
-### Feature 1.2: Inicio de Sesión
+### Feature 1.2: Gestión de Sesión
 
-#### Story 1.2.1: Como vendedor independiente quiero iniciar sesión con mi email y contraseña para acceder a mi información personal del negocio
+#### Story 1.2.1: Como vendedor independiente quiero mantener mi sesión activa mientras uso la app para no tener que autenticarme constantemente
 
 **Criterios de Aceptación:**
-- El formulario debe solicitar email y contraseña
-- Ambos campos son obligatorios
-- Se valida que el email exista en el sistema
-- Se valida que la contraseña sea correcta
-- Se muestra mensaje de error si las credenciales son incorrectas
-- Al iniciar sesión correctamente, se redirige al dashboard
-- Se crea una sesión que persiste mientras el usuario no cierre sesión
-- La sesión debe expirar después de 7 días de inactividad
+- La sesión permanece activa mientras la app está en uso
+- El token JWT tiene vigencia de 30 días
+- Si la app se cierra, la sesión persiste al volver a abrir
+- No se solicita autenticación nuevamente si el token es válido
+- El token se renueva automáticamente si está próximo a expirar
+- La app verifica la validez del token al abrirse
 
 #### Story 1.2.2: Como vendedor independiente quiero cerrar sesión para proteger mi información cuando no esté usando la aplicación
 
 **Criterios de Aceptación:**
-- Existe un botón de "Cerrar Sesión" visible en la interfaz
-- Al hacer clic, la sesión se cierra inmediatamente
-- El usuario es redirigido a la pantalla de inicio de sesión
-- No se puede acceder a páginas protegidas sin iniciar sesión nuevamente
-- Se muestra confirmación de que la sesión fue cerrada
+- Existe un botón "Cerrar Sesión" visible en el menú de perfil
+- Al hacer clic, se solicita confirmación ("¿Seguro que deseas cerrar sesión?")
+- Al confirmar, se elimina el token JWT del dispositivo
+- Se desvincula la sesión de Google en la app
+- El usuario es redirigido a la pantalla de bienvenida/login
+- No se puede acceder al dashboard sin autenticarse nuevamente
+- Se muestra mensaje breve "Sesión cerrada"
 
-#### Story 1.2.3: Como vendedor independiente quiero recuperar mi contraseña para poder acceder nuevamente si la olvido
+#### Story 1.2.3: Como vendedor independiente quiero que mi sesión sea segura y expire automáticamente después de un período de inactividad prolongado
 
 **Criterios de Aceptación:**
-- Existe un enlace "¿Olvidaste tu contraseña?" en la pantalla de inicio de sesión
-- Se solicita el email registrado
-- Se valida que el email exista en el sistema
-- Se envía un email con instrucciones de recuperación (o link temporal)
-- Se muestra mensaje confirmando que se envió el email
-- El link de recuperación expira después de 24 horas
-- El usuario puede establecer una nueva contraseña desde el link
+- El token JWT expira automáticamente después de 30 días sin uso
+- Si el token expira, se solicita autenticación nuevamente
+- El sistema verifica periódicamente la validez del token con el backend
+- Si Google revoca el acceso, el usuario debe autenticarse nuevamente
+- La comunicación con el backend siempre usa HTTPS
+- Los tokens se almacenan de forma segura usando EncryptedSharedPreferences en Android
+- No se almacenan credenciales en texto plano en ningún momento
 
 ---
 
@@ -79,12 +108,12 @@
 
 **Criterios de Aceptación:**
 - Se puede editar nombre completo
-- Se puede cambiar la contraseña (solicitando la actual)
-- El email no se puede modificar (o requiere verificación adicional)
-- Se valida que la nueva contraseña tenga mínimo 8 caracteres
+- Se puede editar nombre del negocio (opcional)
+- El email no se puede modificar (vinculado a cuenta de Google)
+- No se requiere ni permite cambio de contraseña (autenticación delegada a Google)
 - Se muestra mensaje de confirmación al guardar cambios
-- Los cambios se reflejan inmediatamente en la base de datos
-- Se muestra mensaje de error si la contraseña actual es incorrecta
+- Los cambios se reflejan inmediatamente en la base de datos local y backend
+- Si hay cambios pendientes de sincronizar, se muestra indicador
 
 ---
 
@@ -395,7 +424,9 @@
 - Se muestra: fecha, cliente, lista de productos con cantidades y precios
 - Se muestra subtotal por producto y total general
 - Se muestra estado de pago y historial de pagos si existen
-- Se puede imprimir o exportar el detalle (futuro)
+- Existe botón para compartir el detalle (genera PDF y abre selector de apps Android)
+- Se puede compartir por WhatsApp, Email, SMS u otras apps instaladas
+- El PDF generado incluye logo de negocio si está configurado
 - Existe botón para volver a la lista
 
 #### Story 4.2.5: Como vendedor independiente quiero editar una venta para corregir errores en el registro
@@ -725,21 +756,177 @@
 #### Story 7.2.1: Como vendedor independiente quiero que mis datos se guarden automáticamente para no perder información
 
 **Criterios de Aceptación:**
-- Todos los cambios se guardan automáticamente en la base de datos
+- Todos los cambios se guardan automáticamente en la base de datos local (Room Database)
+- Los datos se sincronizan con el backend cuando hay conexión disponible
 - No se requiere acción manual del usuario
-- Se muestra indicador de "guardando..." cuando hay cambios
-- Los datos persisten aunque se cierre el navegador
-- Se implementa sistema de respaldo automático diario
+- Se muestra indicador de "sincronizando..." cuando hay cambios pendientes
+- Los datos persisten aunque se cierre la aplicación
+- Se implementa sincronización automática cada vez que la app se abre
+- Si hay conflictos de sincronización, se prioriza el dato más reciente
 
 #### Story 7.2.2: Como vendedor independiente quiero exportar mis datos a Excel o CSV para tener un respaldo externo
 
 **Criterios de Aceptación:**
 - Existe opción "Exportar datos" en configuración
 - Se puede exportar: productos, clientes, ventas, pagos
-- El formato es CSV o Excel (.xlsx)
-- El archivo se descarga automáticamente
+- El formato es CSV (compatible con Excel)
+- Se solicita permiso de almacenamiento si es necesario (Android 12 o anterior)
+- El archivo se guarda en carpeta Documents/MiVenta del dispositivo
+- Se muestra mensaje con ubicación del archivo guardado
+- Se ofrece opción de compartir el archivo inmediatamente vía Intent
 - Los datos exportados están completos y bien formateados
-- Se incluye fecha de exportación en el nombre del archivo
+- Se incluye fecha de exportación en el nombre del archivo (MiVenta_productos_2026-01-28.csv)
+
+---
+
+*Documento generado para el proyecto Mobile MiVenta*  
+---
+
+## EPIC 8: Funcionalidades Específicas Android
+
+### Feature 8.1: Integración con Aplicaciones
+
+#### Story 8.1.1: Como vendedor independiente quiero compartir detalles de venta por WhatsApp para enviar resumen al cliente
+
+**Criterios de Aceptación:**
+- En el detalle de venta existe botón "Compartir"
+- Al presionar se muestra selector de apps Android (Intent Chooser)
+- Se genera texto formateado con: cliente, productos, cantidades, total, estado de pago
+- Si se selecciona WhatsApp, se puede elegir el contacto directamente
+- El formato del mensaje es claro y profesional
+- Opcionalmente se puede adjuntar PDF de la venta
+- Si el cliente tiene teléfono registrado, se preselecciona su contacto
+
+#### Story 8.1.2: Como vendedor independiente quiero llamar a un cliente desde la app para contactarlo rápidamente
+
+**Criterios de Aceptación:**
+- En el detalle del cliente existe ícono de teléfono junto al número
+- Al tocar el ícono se abre el marcador telefónico del dispositivo
+- El número se pasa correctamente a la app de teléfono
+- Si el cliente no tiene teléfono registrado, el ícono está deshabilitado
+- Se usa Intent ACTION_DIAL (no requiere permisos especiales)
+- Funciona con cualquier app de teléfono instalada
+
+#### Story 8.1.3: Como vendedor independiente quiero compartir reportes por email o apps de mensajería para tener respaldo externo
+
+**Criterios de Aceptación:**
+- En cada reporte existe botón "Compartir"
+- Se genera archivo CSV o PDF del reporte
+- Se abre selector de apps Android (Email, WhatsApp, Drive, etc.)
+- El archivo se adjunta automáticamente al mensaje/email
+- Se incluye texto descriptivo del reporte en el cuerpo del mensaje
+- El archivo temporal se limpia después de compartir
+
+---
+
+### Feature 8.2: Modo Offline
+
+#### Story 8.2.1: Como vendedor independiente quiero trabajar sin conexión a internet para no depender de la red
+
+**Criterios de Aceptación:**
+- Todas las funciones principales funcionan sin conexión (CRUD de productos, clientes, ventas)
+- Los datos se almacenan localmente en Room Database
+- No se muestran errores de red durante operaciones offline
+- La app detecta automáticamente estado de conectividad
+- Se pueden consultar todos los datos históricos sin conexión
+- Las operaciones offline se marcan para sincronización posterior
+
+#### Story 8.2.2: Como vendedor independiente quiero que mis datos se sincronicen automáticamente cuando recupere conexión para mantener información actualizada
+
+**Criterios de Aceptación:**
+- La app detecta cuando se recupera conexión a internet
+- Se inicia sincronización automática en segundo plano
+- Se sincronizan primero operaciones críticas (ventas, pagos)
+- Si hay conflictos, se muestra diálogo para resolverlos
+- Se muestra notificación cuando la sincronización completa exitosamente
+- Si falla la sincronización, se reintenta automáticamente más tarde
+- El usuario puede forzar sincronización manual desde configuración
+
+#### Story 8.2.3: Como vendedor independiente quiero ver el estado de sincronización para saber si mis datos están actualizados
+
+**Criterios de Aceptación:**
+- En la barra superior se muestra ícono de estado de sincronización
+- Estados posibles: sincronizado, sincronizando, pendiente, error
+- Al tocar el ícono se muestra detalle: última sincronización, cambios pendientes
+- Si hay cambios sin sincronizar, se muestra cantidad en badge
+- En caso de error, se muestra mensaje descriptivo del problema
+- Se usa WorkManager para sincronización en segundo plano
+
+---
+
+### Feature 8.3: Notificaciones
+
+#### Story 8.3.1: Como vendedor independiente quiero recibir notificaciones de pagos pendientes para recordar cobrar a mis clientes
+
+**Criterios de Aceptación:**
+- El usuario puede activar/desactivar notificaciones en configuración
+- Se envía notificación para ventas pendientes de más de 7 días
+- La notificación muestra: nombre del cliente y monto pendiente
+- Al tocar la notificación se abre el detalle de la venta
+- Se puede configurar frecuencia de recordatorios (diario, semanal)
+- Las notificaciones se agrupan si hay múltiples pendientes
+- Se respetan las configuraciones de Do Not Disturb del sistema
+
+#### Story 8.3.2: Como vendedor independiente quiero recibir alertas de productos con stock bajo para saber cuándo reabastecer
+
+**Criterios de Aceptación:**
+- Se envía notificación cuando un producto llega a stock bajo (≤5 unidades)
+- La notificación lista los productos con stock crítico
+- Al tocar se abre la lista de productos con filtro de stock bajo
+- Se puede configurar el umbral de stock bajo por usuario
+- Solo se notifica una vez por día para evitar spam
+- El usuario puede desactivar este tipo de notificaciones
+
+#### Story 8.3.3: Como vendedor independiente quiero configurar recordatorios personalizados para hacer seguimiento a clientes
+
+**Criterios de Aceptación:**
+- Se pueden crear recordatorios para ventas específicas
+- Se puede seleccionar fecha y hora del recordatorio
+- La notificación muestra información de la venta y cliente
+- Se pueden cancelar/editar recordatorios antes de que se activen
+- Al tocar la notificación se abre el detalle correspondiente
+- Los recordatorios persisten aunque se reinicie el dispositivo
+- Se usa AlarmManager para precisión en el tiempo
+
+---
+
+### Feature 8.4: Funcionalidades del Dispositivo
+
+#### Story 8.4.1: Como vendedor independiente quiero tomar fotos de productos desde la app para tener registro visual
+
+**Criterios de Aceptación:**
+- En el formulario de producto existe botón "Agregar foto"
+- Se solicita permiso de cámara si no está otorgado
+- Se puede elegir entre tomar foto o seleccionar de galería
+- La foto se comprime para no ocupar mucho espacio
+- Se puede agregar hasta 3 fotos por producto
+- Las fotos se almacenan localmente y se sincronizan al backend
+- Se pueden eliminar fotos desde la edición del producto
+- Las fotos se muestran en el detalle del producto
+
+#### Story 8.4.2: Como vendedor independiente quiero escanear códigos de barras para agregar productos rápidamente
+
+**Criterios de Aceptación:**
+- En el formulario de producto existe botón "Escanear código"
+- Se solicita permiso de cámara si no está otorgado
+- Se abre escáner de códigos usando ML Kit o ZXing
+- Se detectan códigos: EAN-13, EAN-8, UPC-A, QR
+- El código escaneado se guarda en el campo correspondiente
+- Se puede buscar producto por código de barras
+- Si el código no es válido, se muestra mensaje de error
+- Funciona bien en diferentes condiciones de luz
+
+#### Story 8.4.3: Como vendedor independiente quiero importar clientes desde mis contactos del teléfono para agilizar el registro
+
+**Criterios de Aceptación:**
+- En la pantalla de clientes existe opción "Importar desde contactos"
+- Se solicita permiso de acceso a contactos si no está otorgado
+- Se muestra lista de contactos con checkbox para seleccionar
+- Se puede buscar/filtrar contactos por nombre
+- Se importan: nombre y teléfono automáticamente
+- Se pueden seleccionar múltiples contactos para importar
+- Los contactos duplicados se detectan y no se importan
+- Se muestra confirmación con cantidad de clientes importados
 
 ---
 
