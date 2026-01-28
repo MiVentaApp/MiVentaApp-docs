@@ -21,7 +21,7 @@ Los vendedores independientes no cuentan con herramientas simples y accesibles p
 - Conflictos con clientes por falta de registros claros
 
 ### Solución
-Aplicación web que permita:
+Aplicación mobiile que permita:
 - Registrar productos con costo de compra y precio de venta
 - Calcular automáticamente márgenes de ganancia
 - Gestionar clientes y su historial
